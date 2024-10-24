@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOAST UI Calendar Example</title>
+
+    <!-- Enlace del CSS del calendario -->
+    <link rel="stylesheet" href="https://uicdn.toast.com/tui-calendar/latest/tui-calendar.min.css" />
+
+    <!-- Enlace del CSS de los temas (opcional) -->
+    <link rel="stylesheet" href="https://uicdn.toast.com/tui-date-picker/latest/tui-date-picker.css">
+</head>
+<body>
+
+    <div id="calendar" style="height: 800px;"></div>
+
+    <!-- Librerías necesarias -->
+    <script src="https://uicdn.toast.com/tui-code-snippet/latest/tui-code-snippet.min.js"></script>
+    <script src="https://uicdn.toast.com/tui-calendar/latest/tui-calendar.min.js"></script>
+
+    <!-- Archivo JavaScript con configuración -->
+    <script>
+        // Crear una instancia del calendario
+        const Calendar = tui.Calendar;
+
+        const calendar = new Calendar('#calendar', {
+            defaultView: 'month', // Vista predeterminada
+            taskView: false, // Desactiva la vista de tareas
+            scheduleView: true, // Activa la vista de eventos
+            month: {
+                daynames: ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'], // Días en español
+                startDayOfWeek: 0, // Domingo como el primer día de la semana
+                narrowWeekend: true // Fin de semana más angosto visualmente
+            },
+            useCreationPopup: true, // Habilitar el popup de creación de eventos
+            useDetailPopup: true, // Habilitar el popup de detalles de eventos
+        });
+
+        // Añadir eventos al calendario
+        calendar.createSchedules([
+            {
+                id: '1',
+                calendarId: '1',
+                title: 'Evento de ejemplo',
+                category: 'time',
+                dueDateClass: '',
+                start: '2023-10-14T09:30:00', // Fecha y hora de inicio
+                end: '2023-10-14T10:30:00', // Fecha y hora de fin
+            },
+            {
+                id: '2',
+                calendarId: '1',
+                title: 'Reunión semanal',
+                category: 'time',
+                dueDateClass: '',
+                start: '2023-10-15T11:00:00',
+                end: '2023-10-15T12:00:00',
+            }
+        ]);
+    </script>
+    <script src="app.js"></script>
+</body>
+</html>

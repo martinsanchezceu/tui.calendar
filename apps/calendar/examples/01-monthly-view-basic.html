@@ -46,57 +46,88 @@
       <main id="app"></main>
     </div>
 
+    <!-- Dependencias necesarias -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.3/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chance/1.1.8/chance.min.js"></script>
     <script src="../dist/toastui-calendar.ie11.min.js"></script>
     <script src="./scripts/mock-data.js"></script>
     <script src="./scripts/utils.js"></script>
-    <script type="text/javascript" class="code-js">
+
+    <script type="text/javascript">
       var Calendar = window.tui.Calendar;
 
       var cal = new Calendar('#app', {
         defaultView: 'month',
-        calendars: MOCK_CALENDARS,
+        calendars: MOCK_CALENDARS, // Opcional si tienes calendarios
       });
-    </script>
-    <script type="text/javascript">
-      var todayButton = $('.today');
-      var prevButton = $('.prev');
-      var nextButton = $('.next');
-      var range = $('.navbar--range');
 
-      function displayEvents() {
-        var events = generateRandomEvents(
-          cal.getViewName(),
-          cal.getDateRangeStart(),
-          cal.getDateRangeEnd()
-        );
-        cal.clear();
-        cal.createEvents(events);
-      }
+      // Crear los eventos
+      var events = [
+        {
+          id: '1',
+          calendarId: '1',
+          title: 'Evento de ejemplo',
+          category: 'time',
+          start: '2024-10-14T09:30:00',
+          end: '2024-10-14T10:30:00',
+        },
+        {
+          id: '2',
+          calendarId: '1',
+          title: 'Reunión semanal',
+          category: 'time',
+          start: '2024-10-15T11:00:00',
+          end: '2024-10-15T12:00:00',
+        },
+        {
+          id: '3',
+          calendarId: '1',
+          title: 'Seminario General',
+          category: 'time',
+          start: '2024-10-15T12:00:00',
+          end: '2024-10-15T12:00:00',
+        },
+        {
+          id: '4',
+          calendarId: '1',
+          title: 'Seminario General',
+          category: 'time',
+          start: '2024-10-15T15:00:00',
+          end: '2024-10-15T15:00:00',
+        },
+      ];
+
+      // Mostrar los eventos en el calendario
+      cal.createEvents(events);
+
+      // Funciones de control de los botones de navegación
+      var todayButton = document.querySelector('.today');
+      var prevButton = document.querySelector('.prev');
+      var nextButton = document.querySelector('.next');
+      var range = document.querySelector('.navbar--range');
 
       function displayRenderRange() {
-        range.textContent = getNavbarRange(cal.getDateRangeStart(), cal.getDateRangeEnd(), 'month');
+        var start = cal.getDateRangeStart().toISOString().substring(0, 10);
+        var end = cal.getDateRangeEnd().toISOString().substring(0, 10);
+        range.textContent = `${start} - ${end}`;
       }
 
       todayButton.addEventListener('click', function () {
         cal.today();
-        displayEvents();
-        displayRenderRange();
-      });
-      prevButton.addEventListener('click', function () {
-        cal.prev();
-        displayEvents();
-        displayRenderRange();
-      });
-      nextButton.addEventListener('click', function () {
-        cal.next();
-        displayEvents();
         displayRenderRange();
       });
 
-      displayEvents();
-      displayRenderRange();
+      prevButton.addEventListener('click', function () {
+        cal.prev();
+        displayRenderRange();
+      });
+
+      nextButton.addEventListener('click', function () {
+        cal.next();
+        displayRenderRange();
+      });
+
+      displayRenderRange(); // Mostrar el rango actual de fechas al cargar la página
     </script>
   </body>
 </html>

@@ -94,8 +94,8 @@
   {
     "title": "14일 일정",
     "isAllday": false,
-    "start": "2020-06-14T22:00:00",
-    "end": "2020-06-15T00:00:00",
+    "start": "2024-010-19T22:00:00",
+    "end": "2024-10-19T00:00:00",
     "goingDuration": 30,
     "comingDuration": 40
   },
@@ -122,8 +122,8 @@
   {
     "title": "매우 짧은 일정",
     "isAllday": false,
-    "start": "2020-06-15T08:00:00",
-    "end": "2020-06-15T08:10:00",
+    "start": "2024-10-04T08:00:00",
+    "end": "2024-10-04T08:10:00",
     "goingDuration": 30,
     "comingDuration": 50
   },
@@ -131,8 +131,8 @@
     "title": "읽기 전용",
     "isAllday": false,
     "isReadOnly": true,
-    "start": "2020-06-16T04:00:00",
-    "end": "2020-06-16T05:30:00",
+    "start": "2024-14-16T04:00:00",
+    "end": "2024-14-16T05:30:00",
     "goingDuration": 30,
     "comingDuration": 30
   }

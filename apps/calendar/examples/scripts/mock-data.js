@@ -1,4 +1,4 @@
-/* eslint-disable */
+// Mock de los calendarios como ya los tenías definidos
 var MOCK_CALENDARS = [
   {
     id: '1',
@@ -13,7 +13,7 @@ var MOCK_CALENDARS = [
     name: 'Work',
     color: '#ffffff',
     borderColor: '#00a9ff',
-    backgroundColor: '#00a9ff',
+    backgroundColor: '#ff09d2',
     dragBackgroundColor: '#00a9ff',
   },
   {
@@ -44,130 +44,115 @@ var MOCK_CALENDARS = [
 
 var EVENT_CATEGORIES = ['milestone', 'task'];
 
-function generateRandomEvent(calendar, renderStart, renderEnd) {
-  function generateTime(event, renderStart, renderEnd) {
-    var startDate = moment(renderStart.getTime());
-    var endDate = moment(renderEnd.getTime());
-    var diffDate = endDate.diff(startDate, 'days');
+// Función para transformar los datos del evento recibido
+function transformEventData(events) {
+  return events.map(event => {
+    const calendar = MOCK_CALENDARS.find(c => c.id === event.calendarId);
+    const aula = event.location || "Aula no disponible"; // Puedes ajustar según lo que quieras mostrar en 'aula'
 
-    event.isAllday = chance.bool({ likelihood: 30 });
-    if (event.isAllday) {
-      event.category = 'allday';
-    } else if (chance.bool({ likelihood: 30 })) {
-      event.category = EVENT_CATEGORIES[chance.integer({ min: 0, max: 1 })];
-      if (event.category === EVENT_CATEGORIES[1]) {
-        event.dueDateClass = 'morning';
-      }
-    } else {
-      event.category = 'time';
-    }
-
-    startDate.add(chance.integer({ min: 0, max: diffDate }), 'days');
-    startDate.hours(chance.integer({ min: 0, max: 23 }));
-    startDate.minutes(chance.bool() ? 0 : 30);
-    event.start = startDate.toDate();
-
-    endDate = moment(startDate);
-    if (event.isAllday) {
-      endDate.add(chance.integer({ min: 0, max: 3 }), 'days');
-    }
-
-    event.end = endDate.add(chance.integer({ min: 1, max: 4 }), 'hour').toDate();
-
-    if (!event.isAllday && chance.bool({ likelihood: 20 })) {
-      event.goingDuration = chance.integer({ min: 30, max: 120 });
-      event.comingDuration = chance.integer({ min: 30, max: 120 });
-
-      if (chance.bool({ likelihood: 50 })) {
-        event.end = event.start;
-      }
-    }
-  }
-
-  function generateNames() {
-    var names = [];
-    var i = 0;
-    var length = chance.integer({ min: 1, max: 10 });
-
-    for (; i < length; i += 1) {
-      names.push(chance.name());
-    }
-
-    return names;
-  }
-
-  var id = chance.guid();
-  var calendarId = calendar.id;
-  var title = chance.sentence({ words: 3 });
-  var body = chance.bool({ likelihood: 20 }) ? chance.sentence({ words: 10 }) : '';
-  var isReadOnly = chance.bool({ likelihood: 20 });
-  var isPrivate = chance.bool({ likelihood: 20 });
-  var location = chance.address();
-  var attendees = chance.bool({ likelihood: 70 }) ? generateNames() : [];
-  var recurrenceRule = '';
-  var state = chance.bool({ likelihood: 50 }) ? 'Busy' : 'Free';
-  var goingDuration = chance.bool({likelihood: 20}) ? chance.integer({ min: 30, max: 120 }) : 0;
-  var comingDuration = chance.bool({likelihood: 20}) ? chance.integer({ min: 30, max: 120 }) : 0;
-  var raw = {
-    memo: chance.sentence(),
-    creator: {
-      name: chance.name(),
-      avatar: chance.avatar(),
-      email: chance.email(),
-      phone: chance.phone(),
-    },
-  };
-
-  var event = {
-    id: id,
-    calendarId: calendarId,
-    title: title,
-    body: body,
-    isReadOnly: isReadOnly,
-    isPrivate: isPrivate,
-    location: location,
-    attendees: attendees,
-    recurrenceRule: recurrenceRule,
-    state: state,
-    goingDuration: goingDuration,
-    comingDuration: comingDuration,
-    raw: raw,
-  }
-
-  generateTime(event, renderStart, renderEnd);
-
-  if (event.category === 'milestone') {
-    event.color = '#000'
-    event.backgroundColor = 'transparent';
-    event.borderColor = 'transparent';
-    event.dragBackgroundColor = 'transparent';
-  }
-
-  return event;
+    return {
+      titulo: event.title,
+      categoria: event.category,
+      inicio: event.start,
+      fin: event.end,
+      aula: aula,
+      asistentes: event.attendees,
+      estado: event.state,
+      color: calendar ? calendar.backgroundColor : '#000000' // Asumiendo que quieres el color de fondo del calendario
+    };
+  });
 }
 
+// Hacer la solicitud a la API para obtener eventos en el rango de fechas
+async function fetchEventsFromAPI(startDate, endDate) {
+  try {
+    const url = `https://uch-espacios.api.ceu.es/api/Events/all/${startDate}/${endDate}`;
+    const response = await fetch(url);
+    const data = await response.json();
+
+    if (response.ok) {
+      // Transformamos los eventos obtenidos de la API
+      const eventosTransformados = transformEventData(data);
+      console.log(eventosTransformados); // Muestra los eventos transformados
+      return eventosTransformados;
+    } else {
+      console.error('Error en la respuesta de la API:', data);
+    }
+  } catch (error) {
+    console.error('Error al obtener eventos de la API:', error);
+  }
+}
+
+// Función para generar eventos manuales, como ya tenías
 function generateRandomEvents(viewName, renderStart, renderEnd) {
-  var i, j;
-  var event, duplicateEvent;
   var events = [];
 
-  MOCK_CALENDARS.forEach(function(calendar) {
-    for (i = 0; i < chance.integer({ min: 20, max: 50 }); i += 1) {
-      event = generateRandomEvent(calendar, renderStart, renderEnd);
-      events.push(event);
+  // Eventos manuales como ya tenías
+  events.push({
+    id: '1',
+    calendarId: '1', // My Calendar
+    title: 'Reunión con cliente',
+    category: 'time',
+    start: new Date('2024-10-18T10:00:00'),
+    end: new Date('2024-10-18T11:00:00'),
+    isAllday: false,
+    isReadOnly: false,
+    location: 'Oficina',
+    state: 'Busy',
+    attendees: ['Juan', 'Maria']
+  });
 
-      if (i % 5 === 0) {
-        for (j = 0; j < chance.integer({min: 0, max: 2}); j+= 1) {
-          duplicateEvent = JSON.parse(JSON.stringify(event));
-          duplicateEvent.id += `-${j}`;
-          duplicateEvent.calendarId = chance.integer({min: 1, max: 5}).toString();
-          duplicateEvent.goingDuration = 30 * chance.integer({min: 0, max: 4});
-          duplicateEvent.comingDuration = 30 * chance.integer({min: 0, max: 4});
-          events.push(duplicateEvent);
-        }
-      }
-    }
+  events.push({
+    id: '2',
+    calendarId: '2', // Work
+    title: 'Planificación del proyecto',
+    category: 'time',
+    start: new Date('2024-10-19T14:00:00'),
+    end: new Date('2024-10-19T16:00:00'),
+    isAllday: false,
+    isReadOnly: false,
+    location: 'Sala de reuniones',
+    state: 'Busy',
+    attendees: ['Pedro', 'Ana']
+  });
+
+  events.push({
+    id: '3',
+    calendarId: '3', // Family
+    title: 'Cena familiar',
+    category: 'allday',
+    start: new Date('2024-10-20T00:00:00'),
+    end: new Date('2024-10-20T23:59:59'),
+    isAllday: true,
+    isReadOnly: false,
+    location: 'Casa',
+    state: 'Free',
+    attendees: ['Familia']
   });
 
   return events;
 }
+
+// Llama a la API para obtener los eventos en el rango de fechas
+function getEvents(viewName, renderStart, renderEnd) {
+  const startDate = renderStart.toISOString().split('T')[0]; // Convierte la fecha de inicio al formato YYYY-MM-DD
+  const endDate = renderEnd.toISOString().split('T')[0];     // Convierte la fecha de fin al formato YYYY-MM-DD
+
+  fetchEventsFromAPI(startDate, endDate).then(events => {
+    if (!events || events.length === 0) {
+      console.log('No se encontraron eventos desde la API, generando eventos manuales...');
+      const eventosManuales = generateRandomEvents(viewName, renderStart, renderEnd);
+      console.log(eventosManuales); // Muestra los eventos manuales si la API falla o no retorna nada
+    } else {
+      // Si la API retorna eventos, los mostramos transformados
+      console.log('Eventos desde la API:', events);
+    }
+  });
+}
+
+// Suponiendo que tienes un rango de fechas en la vista
+const renderStart = new Date('2024-10-18T00:00:00');
+const renderEnd = new Date('2024-10-20T23:59:59');
+
+// Llama a la función para obtener eventos en el rango de fechas
+getEvents('week', renderStart, renderEnd);

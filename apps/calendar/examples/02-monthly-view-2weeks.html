@@ -69,11 +69,7 @@
       var range = $('.navbar--range');
 
       function displayEvents() {
-        var events = generateRandomEvents(
-          cal.getViewName(),
-          cal.getDateRangeStart(),
-          cal.getDateRangeEnd()
-        );
+       
         cal.clear();
         cal.createEvents(events);
       }
